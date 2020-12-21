@@ -10,4 +10,12 @@ export class UserService {
   async findOne(options: FilterQuery<UserDocument>): Promise<User> {
     return await this.userModel.findOne(options).exec();
   }
+
+  async findAll(): Promise<User[]> {
+    return await this.userModel.find().exec();
+  }
+
+  async create(user: User): Promise<void> {
+    await new this.userModel(user).save();
+  }
 }

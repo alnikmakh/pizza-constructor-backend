@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './modules/auth/auth.service';
 import { PizzaService } from './modules/pizza/pizza.service';
+import { IngredientsService } from './modules/ingredients/ingredients.service';
 
 @Controller()
 export class AppController {
@@ -10,20 +11,24 @@ export class AppController {
     private readonly appService: AppService,
     private readonly authService: AuthService,
     private readonly pizzaService: PizzaService,
+    private readonly ingredientsService: IngredientsService,
   ) {}
 
-  @Get()
-  async getHello() {
-    return await this.pizzaService.createOne({
-      name: 'First',
-      ingredients: ['Томаты', 'Пепперони'],
-      dough: 'thick',
-    });
+  @Get('ingredients')
+  async getIngredients() {
+    await this.appService.initIngredients();
+    await this.appService.initUser();
+    return await this.ingredientsService.findAll();
   }
 
   @Get('pizzas')
   async getPizzas() {
     return await this.pizzaService.findAll();
+  }
+
+  @Post('pizza')
+  async createPizza(@Request() req) {
+    return await this.pizzaService.createOne(req.body);
   }
 
   @UseGuards(AuthGuard('local'))
